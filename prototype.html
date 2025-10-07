@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Copilot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: #8b5cf6;
+            --secondary: #06d6a0;
+            --accent: #f59e0b;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-card-light: #252547;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(at 40% 20%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, rgba(6, 214, 160, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(245, 158, 11, 0.1) 0px, transparent 50%);
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 15, 35, 0.7);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .logo {
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+        }
+
+        .sidebar-header {
+            padding: 0 16px 16px;
+        }
+
+        .new-agent-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .new-agent-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .nav-section {
+            padding: 16px;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            padding: 14px 16px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(6, 214, 160, 0.2) 100%);
+            color: var(--text-primary);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .agents-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 16px;
+        }
+
+        .agent-item {
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            background: var(--glass-bg);
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .agent-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(124, 58, 237, 0.3);
+        }
+
+        .agent-item.active {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(6, 214, 160, 0.15) 100%);
+            border-color: rgba(124, 58, 237, 0.5);
+        }
+
+        .agent-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .status-active {
+            background: var(--success);
+            box-shadow: 0 0 6px var(--success);
+        }
+
+        .status-inactive {
+            background: var(--text-muted);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: transparent;
+        }
+
+        .topbar {
+            height: 70px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            justify-content: space-between;
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .topbar h1 {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--glass-bg);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-light);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--text-muted);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            flex: 1;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        /* Agent Builder View */
+        .chat-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--glass-border);
+            position: relative;
+            min-height: 0; /* Important for flex child scrolling */
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+            height: 0; /* Important for flex child scrolling */
+            min-height: 0; /* Important for flex child scrolling */
+        }
+
+        .message {
+            margin-bottom: 32px;
+            display: flex;
+            gap: 16px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--accent) 0%, #f97316 100%);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .message-content {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: var(--glass-bg);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .message.user .message-content {
+            background: rgba(124, 58, 237, 0.1);
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        .chat-input-container {
+            padding: 24px 32px;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(26, 26, 46, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-input-wrapper {
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-send-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* Right Panel */
+        .right-panel {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(15, 15, 35, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            padding: 16px 28px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px;
+            min-height: 300px;
+            backdrop-filter: blur(10px);
+        }
+
+        .flow-node {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .flow-node:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.2);
+        }
+
+        .flow-node::after {
+            content: '↓';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .flow-node:last-child::after {
+            display: none;
+        }
+
+        .flow-node-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flow-node-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Logs */
+        .logs-container {
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .log-entry {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 16px;
+            transition: background 0.2s;
+        }
+
+        .log-entry:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .log-time {
+            color: var(--primary);
+            font-weight: 600;
+            min-width: 70px;
+        }
+
+        .log-message {
+            flex: 1;
+            color: var(--text-primary);
+        }
+
+        .log-success {
+            color: var(--success);
+        }
+
+        .log-warning {
+            color: var(--warning);
+        }
+
+        .log-error {
+            color: var(--danger);
+        }
+
+        /* Connector Data */
+        .connector-data {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(6, 214, 160, 0.05) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .connector-data:hover {
+            border-color: rgba(124, 58, 237, 0.4);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
+        }
+
+        .connector-data-title {
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .connector-data-item {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .connector-data-item:last-child {
+            border-bottom: none;
+        }
+
+        .connector-data-key {
+            width: 140px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .connector-data-value {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* MCP Connectors View */
+        .connectors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .connector-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .connector-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .connector-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(124, 58, 237, 0.5);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .connector-card:hover::before {
+            opacity: 1;
+        }
+
+        .connector-card.connected::before {
+            background: linear-gradient(90deg, var(--success) 0%, #059669 100%);
+            opacity: 1;
+        }
+
+        .connector-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .connector-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .connector-info {
+            flex: 1;
+        }
+
+        .connector-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .connector-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .connector-status.inactive {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-muted);
+        }
+
+        .connector-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .connector-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .connector-stats {
+            display: flex;
+            gap: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Analytics View */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .metric-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .metric-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .chart-container {
+            grid-column: 1 / -1;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            height: 300px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-placeholder {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            color: var(--text-muted);
+        }
+
+        /* Copilot-style Input */
+        .copilot-input-container {
+            position: fixed;
+            bottom: 0;
+            left: 280px;
+            right: 0;
+            padding: 16px;
+            background: rgba(15, 15, 35, 0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            z-index: 100;
+        }
+
+        .copilot-input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .copilot-input {
+            width: 100%;
+            padding: 16px 60px 16px 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            transition: all 0.2s;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .copilot-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .copilot-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .copilot-actions {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .copilot-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glass-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copilot-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+        }
+
+        .copilot-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .copilot-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Mode Selector */
+        .mode-selector {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px 12px 0 0;
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            backdrop-filter: blur(20px);
+        }
+
+        .mode-selector.active {
+            display: flex;
+        }
+
+        .mode-option {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mode-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-option.active {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+        }
+
+        .mode-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Tools Panel */
+        .tools-panel {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px 12px 0 0;
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            backdrop-filter: blur(20px);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .tools-panel.active {
+            display: flex;
+        }
+
+        .tool-category {
+            margin-bottom: 12px;
+        }
+
+        .tool-category-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tool-option {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .tool-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 58, 237, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-robot logo-icon"></i>
+                <span>Automation Copilot</span>
+            </div>
+            
+            <div class="sidebar-header">
+                <button class="new-agent-btn" onclick="createNewAgent()">
+                    <i class="fas fa-plus"></i>
+                    <span>New Agent</span>
+                </button>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Navigation</div>
+                <div class="nav-item active" onclick="switchView('agents')">
+                    <i class="fas fa-robot nav-icon"></i>
+                    <span>Agents</span>
+                </div>
+                <div class="nav-item" onclick="switchView('connectors')">
+                    <i class="fas fa-plug nav-icon"></i>
+                    <span>MCP Connectors</span>
+                </div>
+                <div class="nav-item" onclick="switchView('analytics')">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <span>Analytics</span>
+                </div>
+            </div>
+
+            <div class="agents-list">
+                <div class="section-title" style="margin-bottom: 12px;">My Agents</div>
+                <div class="agent-item active" onclick="selectAgent(1)">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Data Processing Agent</span>
+                    <div class="agent-status status-active"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent(2)">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email Automation Agent</span>
+                    <div class="agent-status status-active"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent(3)">
+                    <i class="fas fa-bell"></i>
+                    <span>Notification Agent</span>
+                    <div class="agent-status status-inactive"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent(4)">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>File Sync Agent</span>
+                    <div class="agent-status status-active"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent(5)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>E-commerce Monitor</span>
+                    <div class="agent-status status-inactive"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="topbar">
+                <h1 id="topbarTitle">Data Processing Agent</h1>
+                <div class="topbar-actions">
+                    <div class="toggle-container">
+                        <span>Active</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="agentToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button class="btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                    <button class="btn" onclick="testAgent()">
+                        <i class="fas fa-vial"></i>
+                        <span>Test</span>
+                    </button>
+                    <button class="btn-primary" onclick="deployAgent()">
+                        <i class="fas fa-rocket"></i>
+                        <span>Deploy</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Agent Builder View -->
+            <div class="view active" id="agentsView">
+                <div class="chat-panel">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message">
+                            <div class="message-avatar">AC</div>
+                            <div class="message-content">
+                                <strong>Welcome to Agent Builder!</strong> I'll help you configure your automation agent. 
+                                What would you like this agent to do?
+                            </div>
+                        </div>
+                        <div class="message user">
+                            <div class="message-avatar">U</div>
+                            <div class="message-content">
+                                I want to create an agent that processes data from Google Sheets and sends summaries to Slack
+                            </div>
+                        </div>
+                        <div class="message">
+                            <div class="message-avatar">AC</div>
+                            <div class="message-content">
+                                <strong>Perfect!</strong> I've set up a complete workflow for you:
+                                <br><br>
+                                <i class="fas fa-clock"></i> <strong>Schedule Trigger</strong> - Runs daily at 9:00 AM<br>
+                                <i class="fas fa-table"></i> <strong>Google Sheets</strong> - Fetches your sales data<br>
+                                <i class="fas fa-cogs"></i> <strong>Data Processing</strong> - Analyzes and calculates metrics<br>
+                                <i class="fas fa-chart-bar"></i> <strong>Report Generation</strong> - Creates formatted summaries<br>
+                                <i class="fas fa-comment-alt"></i> <strong>Slack Notification</strong> - Sends to your team channel
+                                <br><br>
+                                Check out the flow diagram on the right. Would you like to customize any step?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('flow')">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Flow Diagram</span>
+                        </div>
+                        <div class="tab" onclick="switchTab('connectors')">
+                            <i class="fas fa-plug"></i>
+                            <span>Connectors</span>
+                        </div>
+                        <div class="tab" onclick="switchTab('logs')">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Logs</span>
+                        </div>
+                    </div>
+
+                    <div class="tab-content active" id="flowTab">
+                        <div class="flow-diagram">
+                            <div class="flow-node" onclick="openNodeModal(1)">
+                                <div class="flow-node-title">
+                                    <i class="fas fa-clock"></i>
+                                    Trigger: Schedule
+                                </div>
+                                <div class="flow-node-desc">Runs every day at 9:00 AM</div>
+                            </div>
+                            <div class="flow-node" onclick="openNodeModal(2)">
+                                <div class="flow-node-title">
+                                    <i class="fas fa-table"></i>
+                                    Get Data: Google Sheets
+                                </div>
+                                <div class="flow-node-desc">Fetch data from "Sales Report Q3" sheet</div>
+                            </div>
+                            <div class="flow-node" onclick="openNodeModal(3)">
+                                <div class="flow-node-title">
+                                    <i class="fas fa-cogs"></i>
+                                    Process: Analyze Data
+                                </div>
+                                <div class="flow-node-desc">Calculate totals, averages, and trends</div>
+                            </div>
+                            <div class="flow-node" onclick="openNodeModal(4)">
+                                <div class="flow-node-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Generate: Summary Report
+                                </div>
+                                <div class="flow-node-desc">Create formatted markdown report</div>
+                            </div>
+                            <div class="flow-node" onclick="openNodeModal(5)">
+                                <div class="flow-node-title">
+                                    <i class="fas fa-comment-alt"></i>
+                                    Send: Slack Message
+                                </div>
+                                <div class="flow-node-desc">Post to #sales-team channel</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="connectorsTab">
+                        <div class="connector-data">
+                            <div class="connector-data-title">
+                                <i class="fas fa-table"></i>
+                                Google Sheets Connector
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Status</div>
+                                <div class="connector-data-value">
+                                    <span style="color: var(--success);">
+                                        <i class="fas fa-check-circle"></i> Connected
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Spreadsheet</div>
+                                <div class="connector-data-value">Sales Report 2025</div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Sheet Name</div>
+                                <div class="connector-data-value">Q3 Data</div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Last Sync</div>
+                                <div class="connector-data-value">2 minutes ago</div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Rows Fetched</div>
+                                <div class="connector-data-value">247 rows</div>
+                            </div>
+                        </div>
+
+                        <div class="connector-data">
+                            <div class="connector-data-title">
+                                <i class="fas fa-comment-alt"></i>
+                                Slack Connector
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Status</div>
+                                <div class="connector-data-value">
+                                    <span style="color: var(--success);">
+                                        <i class="fas fa-check-circle"></i> Connected
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Workspace</div>
+                                <div class="connector-data-value">My Company Inc.</div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Channel</div>
+                                <div class="connector-data-value">#sales-team</div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Bot Name</div>
+                                <div class="connector-data-value">Automation Copilot</div>
+                            </div>
+                            <div class="connector-data-item">
+                                <div class="connector-data-key">Messages Sent</div>
+                                <div class="connector-data-value">127 total</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="logsTab">
+                        <div class="logs-container">
+                            <div class="log-entry">
+                                <div class="log-time">09:00:01</div>
+                                <div class="log-message log-success">✓ Trigger activated: Scheduled run</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:02</div>
+                                <div class="log-message">→ Connecting to Google Sheets API...</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:04</div>
+                                <div class="log-message log-success">✓ Data fetched successfully: 247 rows</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:05</div>
+                                <div class="log-message">→ Processing data...</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:07</div>
+                                <div class="log-message log-success">✓ Analysis complete: 5 metrics calculated</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:08</div>
+                                <div class="log-message">→ Generating summary report...</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:09</div>
+                                <div class="log-message log-success">✓ Report generated successfully</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:10</div>
+                                <div class="log-message">→ Posting to Slack channel #sales-team...</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:12</div>
+                                <div class="log-message log-success">✓ Message posted successfully</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">09:00:12</div>
+                                <div class="log-message log-success">✓ Workflow completed in 11s</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MCP Connectors View -->
+            <div class="view" id="connectorsView">
+                <div class="connectors-grid">
+                    <div class="connector-card connected" onclick="openConnectorDetail('slack')">
+                        <div class="connector-header">
+                            <div class="connector-icon">💬</div>
+                            <div class="connector-info">
+                                <div class="connector-name">Slack</div>
+                                <div class="connector-status">
+                                    <span class="connector-status-dot"></span>
+                                    Connected
+                                </div>
+                            </div>
+                        </div>
+                        <div class="connector-description">
+                            Team communication and collaboration platform. Send messages, create channels, and automate workflows.
+                        </div>
+                        <div class="connector-stats">
+                            <div class="stat">
+                                <div class="stat-label">Messages</div>
+                                <div class="stat-value">1.2k</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Uptime</div>
+                                <div class="stat-value">99.9%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connector-card connected" onclick="openConnectorDetail('sheets')">
+                        <div class="connector-header">
+                            <div class="connector-icon">📊</div>
+                            <div class="connector-info">
+                                <div class="connector-name">Google Sheets</div>
+                                <div class="connector-status">
+                                    <span class="connector-status-dot"></span>
+                                    Connected
+                                </div>
+                            </div>
+                        </div>
+                        <div class="connector-description">
+                            Cloud-based spreadsheet application. Read, write, and manipulate spreadsheet data programmatically.
+                        </div>
+                        <div class="connector-stats">
+                            <div class="stat">
+                                <div class="stat-label">Syncs</div>
+                                <div class="stat-value">847</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Uptime</div>
+                                <div class="stat-value">99.8%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connector-card connected" onclick="openConnectorDetail('gmail')">
+                        <div class="connector-header">
+                            <div class="connector-icon">📧</div>
+                            <div class="connector-info">
+                                <div class="connector-name">Gmail</div>
+                                <div class="connector-status">
+                                    <span class="connector-status-dot"></span>
+                                    Connected
+                                </div>
+                            </div>
+                        </div>
+                        <div class="connector-description">
+                            Email service provider. Send emails, manage inbox, create filters, and automate email workflows.
+                        </div>
+                        <div class="connector-stats">
+                            <div class="stat">
+                                <div class="stat-label">Emails</div>
+                                <div class="stat-value">3.4k</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Uptime</div>
+                                <div class="stat-value">99.9%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connector-card" onclick="openConnectorDetail('notion')">
+                        <div class="connector-header">
+                            <div class="connector-icon">📝</div>
+                            <div class="connector-info">
+                                <div class="connector-name">Notion</div>
+                                <div class="connector-status inactive">
+                                    <span class="connector-status-dot"></span>
+                                    Not Connected
+                                </div>
+                            </div>
+                        </div>
+                        <div class="connector-description">
+                            All-in-one workspace. Create pages, databases, and manage knowledge base with powerful automation.
+                        </div>
+                        <div class="connector-stats">
+                            <div class="stat">
+                                <div class="stat-label">Pages</div>
+                                <div class="stat-value">—</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Status</div>
+                                <div class="stat-value">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connector-card connected" onclick="openConnectorDetail('github')">
+                        <div class="connector-header">
+                            <div class="connector-icon">⚡</div>
+                            <div class="connector-info">
+                                <div class="connector-name">GitHub</div>
+                                <div class="connector-status">
+                                    <span class="connector-status-dot"></span>
+                                    Connected
+                                </div>
+                            </div>
+                        </div>
+                        <div class="connector-description">
+                            Developer platform for version control. Monitor repositories, create issues, and automate CI/CD.
+                        </div>
+                        <div class="connector-stats">
+                            <div class="stat">
+                                <div class="stat-label">Repos</div>
+                                <div class="stat-value">24</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Uptime</div>
+                                <div class="stat-value">99.9%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="connector-card connected" onclick="openConnectorDetail('airtable')">
+                        <div class="connector-header">
+                            <div class="connector-icon">🗂️</div>
+                            <div class="connector-info">
+                                <div class="connector-name">Airtable</div>
+                                <div class="connector-status">
+                                    <span class="connector-status-dot"></span>
+                                    Connected
+                                </div>
+                            </div>
+                        </div>
+                        <div class="connector-description">
+                            Cloud collaboration service. Build databases, manage projects, and create custom workflows.
+                        </div>
+                        <div class="connector-stats">
+                            <div class="stat">
+                                <div class="stat-label">Records</div>
+                                <div class="stat-value">2.1k</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Uptime</div>
+                                <div class="stat-value">99.7%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div class="view" id="analyticsView">
+                <div class="analytics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Active Agents</div>
+                        <div class="metric-value">12</div>
+                        <div class="metric-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+2 this month</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Tasks Executed</div>
+                        <div class="metric-value">4,827</div>
+                        <div class="metric-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+12% from last month</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Success Rate</div>
+                        <div class="metric-value">98.7%</div>
+                        <div class="metric-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+0.5% improvement</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg. Response Time</div>
+                        <div class="metric-value">1.2s</div>
+                        <div class="metric-change">
+                            <i class="fas fa-arrow-down"></i>
+                            <span>-0.3s faster</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="metric-title">Agent Performance Over Time</div>
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-line" style="font-size: 48px; margin-right: 16px;"></i>
+                            <span>Performance chart visualization would appear here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copilot-style Input -->
+    <div class="copilot-input-container">
+        <div class="copilot-input-wrapper">
+            <div class="mode-selector" id="modeSelector">
+                <div class="mode-option active" onclick="selectMode('assistant')">
+                    <div class="mode-icon"><i class="fas fa-robot"></i></div>
+                    <div>
+                        <div class="mode-name">Assistant</div>
+                        <div class="mode-desc">Get help building your automation</div>
+                    </div>
+                </div>
+                <div class="mode-option" onclick="selectMode('edit')">
+                    <div class="mode-icon"><i class="fas fa-edit"></i></div>
+                    <div>
+                        <div class="mode-name">Edit</div>
+                        <div class="mode-desc">Modify existing automation flows</div>
+                    </div>
+                </div>
+                <div class="mode-option" onclick="selectMode('explain')">
+                    <div class="mode-icon"><i class="fas fa-question-circle"></i></div>
+                    <div>
+                        <div class="mode-name">Explain</div>
+                        <div class="mode-desc">Understand how your automation works</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tools-panel" id="toolsPanel">
+                <div class="tool-category">
+                    <div class="tool-category-title">Data Sources</div>
+                    <div class="tool-option" onclick="selectTool('google-sheets')">
+                        <i class="fas fa-table"></i>
+                        <span>Google Sheets</span>
+                    </div>
+                    <div class="tool-option" onclick="selectTool('airtable')">
+                        <i class="fas fa-database"></i>
+                        <span>Airtable</span>
+                    </div>
+                    <div class="tool-option" onclick="selectTool('csv')">
+                        <i class="fas fa-file-csv"></i>
+                        <span>CSV File</span>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <div class="tool-category-title">Actions</div>
+                    <div class="tool-option" onclick="selectTool('slack')">
+                        <i class="fas fa-comment-alt"></i>
+                        <span>Send Slack Message</span>
+                    </div>
+                    <div class="tool-option" onclick="selectTool('email')">
+                        <i class="fas fa-envelope"></i>
+                        <span>Send Email</span>
+                    </div>
+                    <div class="tool-option" onclick="selectTool('webhook')">
+                        <i class="fas fa-link"></i>
+                        <span>Trigger Webhook</span>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <div class="tool-category-title">Processing</div>
+                    <div class="tool-option" onclick="selectTool('filter')">
+                        <i class="fas fa-filter"></i>
+                        <span>Filter Data</span>
+                    </div>
+                    <div class="tool-option" onclick="selectTool('transform')">
+                        <i class="fas fa-cogs"></i>
+                        <span>Transform Data</span>
+                    </div>
+                    <div class="tool-option" onclick="selectTool('aggregate')">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Aggregate Data</span>
+                    </div>
+                </div>
+            </div>
+
+            <textarea class="copilot-input" id="copilotInput" placeholder="Ask Automation Copilot to build, edit, or explain your automation..." rows="1"></textarea>
+            <div class="copilot-actions">
+                <button class="copilot-btn" onclick="toggleModeSelector()">
+                    <i class="fas fa-robot"></i>
+                </button>
+                <button class="copilot-btn" onclick="toggleToolsPanel()">
+                    <i class="fas fa-tools"></i>
+                </button>
+                <button class="copilot-btn primary" onclick="sendCopilotMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Node Modal -->
+    <div class="modal-overlay" id="nodeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-cogs"></i>
+                    <span id="modalNodeTitle">Edit Node</span>
+                </div>
+                <button class="modal-close" onclick="closeNodeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="nodeName">Node Name</label>
+                    <input type="text" class="form-input" id="nodeName" placeholder="Enter node name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="nodeDescription">Description</label>
+                    <textarea class="form-textarea" id="nodeDescription" placeholder="Enter node description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="nodeType">Node Type</label>
+                        <select class="form-select" id="nodeType">
+                            <option value="trigger">Trigger</option>
+                            <option value="action">Action</option>
+                            <option value="condition">Condition</option>
+                            <option value="transform">Transform</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="nodeStatus">Status</label>
+                        <select class="form-select" id="nodeStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="nodeConfig">Configuration</label>
+                    <textarea class="form-textarea" id="nodeConfig" placeholder="Enter configuration details"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeNodeModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveNode()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'agents';
+        let currentAgent = 1;
+        let currentMode = 'assistant';
+        let currentNodeId = null;
+        let isDemoRunning = false;
+
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            if (view === 'agents') {
+                document.getElementById('agentsView').classList.add('active');
+                document.querySelector('[onclick="switchView(\'agents\')"]').classList.add('active');
+                document.getElementById('topbarTitle').textContent = getAgentName(currentAgent);
+                document.querySelector('.topbar-actions').style.display = 'flex';
+            } else if (view === 'connectors') {
+                document.getElementById('connectorsView').classList.add('active');
+                document.querySelector('[onclick="switchView(\'connectors\')"]').classList.add('active');
+                document.getElementById('topbarTitle').textContent = 'MCP Connectors';
+                document.querySelector('.topbar-actions').style.display = 'none';
+            } else if (view === 'analytics') {
+                document.getElementById('analyticsView').classList.add('active');
+                document.querySelector('[onclick="switchView(\'analytics\')"]').classList.add('active');
+                document.getElementById('topbarTitle').textContent = 'Analytics Dashboard';
+                document.querySelector('.topbar-actions').style.display = 'none';
+            }
+        }
+
+        function getAgentName(id) {
+            const agentNames = {
+                1: 'Data Processing Agent',
+                2: 'Email Automation Agent',
+                3: 'Notification Agent',
+                4: 'File Sync Agent',
+                5: 'E-commerce Monitor'
+            };
+            return agentNames[id] || 'New Agent';
+        }
+
+        function selectAgent(id) {
+            document.querySelectorAll('.agent-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            currentAgent = id;
+            
+            if (currentView === 'agents') {
+                document.getElementById('topbarTitle').textContent = getAgentName(id);
+            }
+            
+            // Check if this is the Email Automation Agent and start demo
+            if (id === 2 && !isDemoRunning) {
+                runEmailAutomationDemo();
+            }
+        }
+
+        function createNewAgent() {
+            const agentName = prompt('Enter agent name:');
+            if (agentName) {
+                const agentsList = document.querySelector('.agents-list');
+                const newAgent = document.createElement('div');
+                newAgent.className = 'agent-item';
+                newAgent.innerHTML = `
+                    <i class="fas fa-robot"></i>
+                    <span>${agentName}</span>
+                    <div class="agent-status status-inactive"></div>
+                `;
+                newAgent.onclick = function() { 
+                    selectAgent(Date.now()); 
+                };
+                agentsList.appendChild(newAgent);
+                
+                // Add a message to the chat
+                addChatMessage('user', `I want to create a new agent called "${agentName}"`);
+                setTimeout(() => {
+                    addChatMessage('bot', `Great! I'll help you set up "${agentName}". What would you like this agent to do?`);
+                }, 1000);
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function openConnectorDetail(connector) {
+            const connectorNames = {
+                'slack': 'Slack',
+                'sheets': 'Google Sheets',
+                'gmail': 'Gmail',
+                'notion': 'Notion',
+                'github': 'GitHub',
+                'airtable': 'Airtable'
+            };
+            
+            alert(`Opening detailed view for ${connectorNames[connector]}. This would show:\n\n• Configuration settings\n• Connection logs\n• Usage statistics\n• API documentation\n• Flow diagrams for this connector`);
+        }
+
+        function addChatMessage(sender, content) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'user' ? 'U' : 'AC'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            
+            // Force scroll to bottom with multiple approaches
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 50);
+            
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 200);
+            
+            // Use requestAnimationFrame for better performance
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+
+        function testAgent() {
+            alert('Running test for ' + getAgentName(currentAgent) + '...\n\nThis would execute a test run of the agent workflow.');
+        }
+
+        function deployAgent() {
+            alert('Deploying ' + getAgentName(currentAgent) + '...\n\nAgent has been deployed and is now active!');
+        }
+
+        // Node Modal Functions
+        function openNodeModal(nodeId) {
+            currentNodeId = nodeId;
+            
+            // Set modal content based on node type
+            const nodeData = getNodeData(nodeId);
+            
+            document.getElementById('modalNodeTitle').textContent = `Edit ${nodeData.name}`;
+            document.getElementById('nodeName').value = nodeData.name;
+            document.getElementById('nodeDescription').value = nodeData.description;
+            document.getElementById('nodeType').value = nodeData.type;
+            document.getElementById('nodeStatus').value = nodeData.status;
+            document.getElementById('nodeConfig').value = nodeData.config;
+            
+            document.getElementById('nodeModal').classList.add('active');
+        }
+
+        function closeNodeModal() {
+            document.getElementById('nodeModal').classList.remove('active');
+        }
+
+        function saveNode() {
+            const nodeData = {
+                name: document.getElementById('nodeName').value,
+                description: document.getElementById('nodeDescription').value,
+                type: document.getElementById('nodeType').value,
+                status: document.getElementById('nodeStatus').value,
+                config: document.getElementById('nodeConfig').value
+            };
+            
+            // Update the node in the UI
+            updateNodeInUI(currentNodeId, nodeData);
+            
+            // Close the modal
+            closeNodeModal();
+            
+            // Show success message
+            alert(`Node "${nodeData.name}" has been updated successfully!`);
+        }
+
+        function getNodeData(nodeId) {
+            const nodeData = {
+                1: {
+                    name: 'Schedule Trigger',
+                    description: 'Runs every day at 9:00 AM',
+                    type: 'trigger',
+                    status: 'active',
+                    config: '{\n  "schedule": "0 9 * * *",\n  "timezone": "UTC"\n}'
+                },
+                2: {
+                    name: 'Google Sheets',
+                    description: 'Fetch data from "Sales Report Q3" sheet',
+                    type: 'action',
+                    status: 'active',
+                    config: '{\n  "spreadsheetId": "abc123",\n  "range": "Q3 Data!A1:Z1000"\n}'
+                },
+                3: {
+                    name: 'Analyze Data',
+                    description: 'Calculate totals, averages, and trends',
+                    type: 'transform',
+                    status: 'active',
+                    config: '{\n  "calculations": ["sum", "average", "trend"],\n  "columns": ["Revenue", "Units", "Profit"]\n}'
+                },
+                4: {
+                    name: 'Summary Report',
+                    description: 'Create formatted markdown report',
+                    type: 'action',
+                    status: 'active',
+                    config: '{\n  "template": "markdown",\n  "includeCharts": true\n}'
+                },
+                5: {
+                    name: 'Slack Message',
+                    description: 'Post to #sales-team channel',
+                    type: 'action',
+                    status: 'active',
+                    config: '{\n  "channel": "#sales-team",\n  "format": "markdown"\n}'
+                }
+            };
+            
+            return nodeData[nodeId] || {
+                name: 'New Node',
+                description: 'Node description',
+                type: 'action',
+                status: 'active',
+                config: '{}'
+            };
+        }
+
+        function updateNodeInUI(nodeId, nodeData) {
+            // Find the node element and update its content
+            const nodes = document.querySelectorAll('.flow-node');
+            if (nodes[nodeId - 1]) {
+                const node = nodes[nodeId - 1];
+                const titleElement = node.querySelector('.flow-node-title');
+                const descElement = node.querySelector('.flow-node-desc');
+                
+                titleElement.innerHTML = `<i class="fas fa-${getNodeIcon(nodeData.type)}"></i> ${nodeData.name}`;
+                descElement.textContent = nodeData.description;
+            }
+        }
+
+        function getNodeIcon(nodeType) {
+            const icons = {
+                'trigger': 'clock',
+                'action': 'play',
+                'condition': 'code-branch',
+                'transform': 'cogs'
+            };
+            return icons[nodeType] || 'circle';
+        }
+
+        // Email Automation Demo Function
+        function runEmailAutomationDemo() {
+            if (isDemoRunning) return;
+            isDemoRunning = true;
+            
+            // Clear existing chat
+            document.getElementById('chatMessages').innerHTML = '';
+            
+            // Hide copilot input for demo
+            document.querySelector('.copilot-input-container').style.display = 'none';
+            
+            // Demo steps with delays
+            setTimeout(() => {
+                addChatMessage('bot', "Welcome to the Email Automation Agent setup! I'll help you create an automation that processes incoming support emails and generates responses.");
+            }, 500);
+            
+            setTimeout(() => {
+                addChatMessage('user', "I need an agent that can automatically respond to customer support emails with relevant information based on the inquiry type.");
+            }, 2500);
+            
+            setTimeout(() => {
+                addChatMessage('bot', "Perfect! I'll set up a workflow that monitors your Gmail inbox for support emails, analyzes the content, categorizes them, and sends appropriate responses.");
+            }, 4500);
+            
+            setTimeout(() => {
+                addChatMessage('user', "That sounds great. Can you also log these interactions in a Google Sheet for tracking?");
+            }, 6500);
+            
+            setTimeout(() => {
+                addChatMessage('bot', "Absolutely! I'll add a step to log all interactions in a Google Sheet. Let me build this workflow for you now.");
+                updateFlowForEmailDemo();
+                updateConnectorsForEmailDemo();
+            }, 8500);
+            
+            setTimeout(() => {
+                addChatMessage('bot', "✅ <strong>Workflow Complete!</strong><br><br>" +
+                    "Here's what I've set up for your Email Automation Agent:<br><br>" +
+                    "📧 <strong>Gmail Monitor</strong> - Checks inbox every 10 minutes for support emails<br>" +
+                    "🤖 <strong>AI Analysis</strong> - Uses AI to categorize emails by type<br>" +
+                    "📊 <strong>Response Generator</strong> - Creates appropriate responses based on category<br>" +
+                    "📝 <strong>Logging</strong> - Records all interactions in Google Sheets<br>" +
+                    "⏰ <strong>Follow-up System</strong> - Schedules follow-up emails if needed<br><br>" +
+                    "Check the Flow Diagram and Connectors tabs to see the complete setup!");
+            }, 10500);
+            
+            setTimeout(() => {
+                addChatMessage('user', "This looks perfect! Can we test it with a sample email?");
+            }, 12500);
+            
+            setTimeout(() => {
+                addChatMessage('bot', "Sure! Let me simulate processing a sample support email...");
+                updateLogsForEmailDemo();
+            }, 14500);
+            
+            setTimeout(() => {
+                addChatMessage('bot', "✅ <strong>Test Successful!</strong><br><br>" +
+                    "I processed a sample support email about 'billing inquiry'. The system:<br>" +
+                    "- Correctly identified it as a billing question<br>" +
+                    "- Generated a personalized response with account information<br>" +
+                    "- Logged the interaction in Google Sheets<br>" +
+                    "- Sent the response email to the customer<br><br>" +
+                    "Your Email Automation Agent is ready to deploy!");
+                isDemoRunning = false;
+                
+                // Show success in logs
+                setTimeout(() => {
+                    const logsContainer = document.querySelector('.logs-container');
+                    const successLog = document.createElement('div');
+                    successLog.className = 'log-entry';
+                    successLog.innerHTML = `
+                        <div class="log-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</div>
+                        <div class="log-message log-success">✓ Demo completed: Email Automation Agent is ready for deployment</div>
+                    `;
+                    logsContainer.appendChild(successLog);
+                }, 500);
+                
+                // Show copilot input again after demo
+                setTimeout(() => {
+                    document.querySelector('.copilot-input-container').style.display = 'block';
+                }, 1000);
+            }, 16500);
+        }
+
+        function updateFlowForEmailDemo() {
+            const flowDiagram = document.querySelector('.flow-diagram');
+            flowDiagram.innerHTML = `
+                <div class="flow-node" onclick="openNodeModal(1)">
+                    <div class="flow-node-title">
+                        <i class="fas fa-envelope"></i>
+                        Trigger: Gmail Monitor
+                    </div>
+                    <div class="flow-node-desc">Checks inbox every 10 minutes for new support emails</div>
+                </div>
+                <div class="flow-node" onclick="openNodeModal(2)">
+                    <div class="flow-node-title">
+                        <i class="fas fa-brain"></i>
+                        AI Analysis
+                    </div>
+                    <div class="flow-node-desc">Categorizes emails by type (billing, technical, general)</div>
+                </div>
+                <div class="flow-node" onclick="openNodeModal(3)">
+                    <div class="flow-node-title">
+                        <i class="fas fa-reply"></i>
+                        Response Generator
+                    </div>
+                    <div class="flow-node-desc">Creates personalized responses based on email category</div>
+                </div>
+                <div class="flow-node" onclick="openNodeModal(4)">
+                    <div class="flow-node-title">
+                        <i class="fas fa-table"></i>
+                        Log to Google Sheets
+                    </div>
+                    <div class="flow-node-desc">Records all interactions for tracking and analytics</div>
+                </div>
+                <div class="flow-node" onclick="openNodeModal(5)">
+                    <div class="flow-node-title">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Response
+                    </div>
+                    <div class="flow-node-desc">Sends the generated response to the customer</div>
+                </div>
+            `;
+        }
+
+        function updateConnectorsForEmailDemo() {
+            const connectorsTab = document.getElementById('connectorsTab');
+            connectorsTab.innerHTML = `
+                <div class="connector-data">
+                    <div class="connector-data-title">
+                        <i class="fas fa-envelope"></i>
+                        Gmail Connector
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Status</div>
+                        <div class="connector-data-value">
+                            <span style="color: var(--success);">
+                                <i class="fas fa-check-circle"></i> Connected
+                            </span>
+                        </div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Email Account</div>
+                        <div class="connector-data-value">support@mycompany.com</div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Check Frequency</div>
+                        <div class="connector-data-value">Every 10 minutes</div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Label Filter</div>
+                        <div class="connector-data-value">Support-Inbox</div>
+                    </div>
+                </div>
+
+                <div class="connector-data">
+                    <div class="connector-data-title">
+                        <i class="fas fa-table"></i>
+                        Google Sheets Connector
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Status</div>
+                        <div class="connector-data-value">
+                            <span style="color: var(--success);">
+                                <i class="fas fa-check-circle"></i> Connected
+                            </span>
+                        </div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Spreadsheet</div>
+                        <div class="connector-data-value">Support Interactions Log</div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Sheet Name</div>
+                        <div class="connector-data-value">Email Responses</div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Last Update</div>
+                        <div class="connector-data-value">Just now</div>
+                    </div>
+                </div>
+
+                <div class="connector-data">
+                    <div class="connector-data-title">
+                        <i class="fas fa-robot"></i>
+                        AI Analysis Service
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Status</div>
+                        <div class="connector-data-value">
+                            <span style="color: var(--success);">
+                                <i class="fas fa-check-circle"></i> Connected
+                            </span>
+                        </div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Model</div>
+                        <div class="connector-data-value">GPT-4 for email classification</div>
+                    </div>
+                    <div class="connector-data-item">
+                        <div class="connector-data-key">Response Templates</div>
+                        <div class="connector-data-value">12 predefined templates</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateLogsForEmailDemo() {
+            const logsContainer = document.querySelector('.logs-container');
+            logsContainer.innerHTML = `
+                <div class="log-entry">
+                    <div class="log-time">10:30:01</div>
+                    <div class="log-message log-success">✓ Gmail monitor activated</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:02</div>
+                    <div class="log-message">→ Checking for new support emails...</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:04</div>
+                    <div class="log-message log-success">✓ New email found: "Billing Question - Invoice #45892"</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:05</div>
+                    <div class="log-message">→ Analyzing email content with AI...</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:07</div>
+                    <div class="log-message log-success">✓ Email categorized as: Billing Inquiry</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:08</div>
+                    <div class="log-message">→ Generating personalized response...</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:10</div>
+                    <div class="log-message log-success">✓ Response generated successfully</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:11</div>
+                    <div class="log-message">→ Logging interaction to Google Sheets...</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:12</div>
+                    <div class="log-message log-success">✓ Interaction logged successfully</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:13</div>
+                    <div class="log-message">→ Sending response email...</div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-time">10:30:15</div>
+                    <div class="log-message log-success">✓ Response sent successfully to customer</div>
+                </div>
+            `;
+        }
+
+        // Copilot Input Functions
+        function toggleModeSelector() {
+            if (isDemoRunning) return;
+            const modeSelector = document.getElementById('modeSelector');
+            const toolsPanel = document.getElementById('toolsPanel');
+            
+            modeSelector.classList.toggle('active');
+            toolsPanel.classList.remove('active');
+        }
+
+        function toggleToolsPanel() {
+            if (isDemoRunning) return;
+            const toolsPanel = document.getElementById('toolsPanel');
+            const modeSelector = document.getElementById('modeSelector');
+            
+            toolsPanel.classList.toggle('active');
+            modeSelector.classList.remove('active');
+        }
+
+        function selectMode(mode) {
+            if (isDemoRunning) return;
+            currentMode = mode;
+            document.querySelectorAll('.mode-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            const modeSelector = document.getElementById('modeSelector');
+            modeSelector.classList.remove('active');
+            
+            const input = document.getElementById('copilotInput');
+            if (mode === 'assistant') {
+                input.placeholder = "Ask Automation Copilot to build, edit, or explain your automation...";
+            } else if (mode === 'edit') {
+                input.placeholder = "Describe what you want to change in your automation...";
+            } else if (mode === 'explain') {
+                input.placeholder = "Ask about how your automation works...";
+            }
+        }
+
+        function selectTool(tool) {
+            if (isDemoRunning) return;
+            const toolsPanel = document.getElementById('toolsPanel');
+            toolsPanel.classList.remove('active');
+            
+            const input = document.getElementById('copilotInput');
+            const toolText = {
+                'google-sheets': 'Connect to Google Sheets',
+                'airtable': 'Connect to Airtable',
+                'csv': 'Import CSV file',
+                'slack': 'Send a Slack message',
+                'email': 'Send an email',
+                'webhook': 'Trigger a webhook',
+                'filter': 'Filter data based on conditions',
+                'transform': 'Transform data values',
+                'aggregate': 'Aggregate data with calculations'
+            };
+            
+            input.value = toolText[tool] + ' ';
+            input.focus();
+        }
+
+        function sendCopilotMessage() {
+            if (isDemoRunning) return;
+            const input = document.getElementById('copilotInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Add user message to chat
+                addChatMessage('user', message);
+                input.value = '';
+                
+                // Auto-resize textarea
+                input.style.height = 'auto';
+                
+                // Simulate AI response based on mode
+                setTimeout(() => {
+                    let response = '';
+                    
+                    if (currentMode === 'assistant') {
+                        response = generateAssistantResponse(message);
+                    } else if (currentMode === 'edit') {
+                        response = generateEditResponse(message);
+                    } else if (currentMode === 'explain') {
+                        response = generateExplainResponse(message);
+                    }
+                    
+                    addChatMessage('bot', response);
+                }, 1000);
+            }
+        }
+
+        function generateAssistantResponse(message) {
+            const responses = [
+                `I understand you want to "${message}". Let me create that workflow for you. I'll set up the necessary connectors and processing steps.`,
+                `Great idea! I've designed a workflow for "${message}". Check the flow diagram on the right - I've added the necessary steps and connected the services.`,
+                `I've created an automation that will "${message}". The workflow includes data fetching, processing, and output steps. Would you like me to explain any part of it?`,
+                `Your request to "${message}" has been processed. I've configured a complete workflow with error handling and logging. You can test it now.`
+            ];
+            
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function generateEditResponse(message) {
+            const responses = [
+                `I'll help you modify your automation to "${message}". I've updated the workflow accordingly.`,
+                `Based on your request to "${message}", I've adjusted the automation flow. The changes have been applied.`,
+                `I've updated your automation as requested: "${message}". The modified workflow is ready for testing.`
+            ];
+            
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function generateExplainResponse(message) {
+            const responses = [
+                `This automation works by: 1) Triggering on a schedule, 2) Fetching data from Google Sheets, 3) Processing the data, 4) Generating a report, and 5) Sending it to Slack. "${message}" is handled in step 3.`,
+                `To answer your question about "${message}": The automation uses the MCP connectors to integrate with external services, processes data with JavaScript functions, and handles errors with retry logic.`,
+                `The automation flow for "${message}" consists of five main steps. Would you like me to explain a specific part in more detail?`
+            ];
+            
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        // Auto-resize textarea
+        document.getElementById('copilotInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Handle Enter key in copilot input (but allow Shift+Enter for new line)
+        document.getElementById('copilotInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendCopilotMessage();
+            }
+        });
+
+        // Close panels when clicking outside
+        document.addEventListener('click', function(event) {
+            const modeSelector = document.getElementById('modeSelector');
+            const toolsPanel = document.getElementById('toolsPanel');
+            const copilotInput = document.getElementById('copilotInput');
+            
+            if (!event.target.closest('.copilot-actions') && 
+                !event.target.closest('.mode-selector') && 
+                !event.target.closest('.tools-panel')) {
+                modeSelector.classList.remove('active');
+                toolsPanel.classList.remove('active');
+            }
+        });
+
+        // Initialize with a welcome message if the chat is empty
+        window.onload = function() {
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages.children.length <= 3) {
+                setTimeout(() => {
+                    addChatMessage('bot', "You can click on any step in the flow diagram to configure it. Try using the Copilot input at the bottom to ask for help! Click on the Email Automation Agent to see a complete workflow demo.");
+                }, 1500);
+            }
+        };
+    </script>
+</body>
+</html>
