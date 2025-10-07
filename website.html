@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Copilot - AI-Powered Automation Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --primary-light: #8b5cf6;
+            --secondary: #06d6a0;
+            --accent: #f59e0b;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-card-light: #252547;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Animation Canvas */
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 15, 35, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover:after,
+        .nav-links a.active:after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover:before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 180px 0 100px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-secondary:hover:before {
+            left: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-light);
+        }
+
+        /* Features Section */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover:before {
+            opacity: 1;
+        }
+
+        /* Shine effect for feature cards */
+        .feature-card:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 20%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.13);
+            transform: rotate(30deg);
+            transition: all 0.8s;
+            opacity: 0;
+        }
+
+        .feature-card:hover:after {
+            left: 120%;
+            opacity: 0.5;
+            transition: left 0.8s, opacity 0.1s 0.1s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(124, 58, 237, 0.5);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            background: rgba(15, 15, 35, 0.7);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 50px 0;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-section:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+            z-index: -1;
+        }
+
+        .demo-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .demo-section p {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .demo-image {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* How It Works Section - ENHANCED */
+        .how-it-works-container {
+            position: relative;
+            margin: 80px 0;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            margin-bottom: 60px;
+        }
+
+        .workflow-steps::before {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: 10%;
+            width: 80%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            z-index: 0;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            width: 22%;
+            transition: all 0.3s ease;
+        }
+
+        .step-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-circle:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 20%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(30deg);
+            transition: all 0.8s;
+            opacity: 0;
+        }
+
+        .step:hover .step-circle:after {
+            left: 120%;
+            opacity: 0.5;
+            transition: left 0.8s, opacity 0.1s 0.1s;
+        }
+
+        .step:hover .step-circle {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        .step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .workflow-demo {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+        }
+
+        .workflow-demo:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .workflow-demo:hover:before {
+            opacity: 1;
+        }
+
+        .demo-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .demo-text {
+            width: 45%;
+            padding-right: 30px;
+        }
+
+        .demo-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .demo-text p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .demo-visual {
+            width: 50%;
+            height: 200px;
+            background: rgba(15, 15, 35, 0.7);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flow-node {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            transition: all 0.5s ease;
+        }
+
+        .flow-connector {
+            position: absolute;
+            height: 4px;
+            background: var(--primary);
+            transition: all 0.5s ease;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .demo-btn {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .demo-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-light);
+        }
+
+        .demo-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        /* Use Cases Section */
+        .use-cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .use-case {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .use-case:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .use-case:hover:before {
+            opacity: 1;
+        }
+
+        /* Shine effect for use cases */
+        .use-case:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 20%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.13);
+            transform: rotate(30deg);
+            transition: all 0.8s;
+            opacity: 0;
+        }
+
+        .use-case:hover:after {
+            left: 120%;
+            opacity: 0.5;
+            transition: left 0.8s, opacity 0.1s 0.1s;
+        }
+
+        .use-case:hover {
+            transform: translateY(-5px);
+            border-color: rgba(124, 58, 237, 0.5);
+        }
+
+        .use-case-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 0 auto 20px;
+            color: white;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .use-case:hover .use-case-icon {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        .use-case h3, .use-case p {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .testimonial:hover:before {
+            opacity: 1;
+        }
+
+        /* Shine effect for testimonials */
+        .testimonial:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 20%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.13);
+            transform: rotate(30deg);
+            transition: all 0.8s;
+            opacity: 0;
+        }
+
+        .testimonial:hover:after {
+            left: 120%;
+            opacity: 0.5;
+            transition: left 0.8s, opacity 0.1s 0.1s;
+        }
+
+        .testimonial-content {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .testimonial:hover .author-avatar {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.5);
+        }
+
+        .author-info h4 {
+            margin-bottom: 5px;
+        }
+
+        .author-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(6, 214, 160, 0.15) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            padding: 80px 40px;
+            text-align: center;
+            margin: 50px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%237c3aed' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .cta-section h2 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 15, 35, 0.9);
+            border-top: 1px solid var(--glass-border);
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-links a:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .footer-links a:hover:after {
+            width: 100%;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--glass-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-links a:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .social-links a:hover:before {
+            left: 100%;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .demo-section {
+                padding: 40px 20px;
+            }
+
+            .cta-section {
+                padding: 60px 20px;
+            }
+
+            .workflow-steps {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+            }
+
+            .workflow-steps::before {
+                display: none;
+            }
+
+            .step {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .demo-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .demo-text, .demo-visual {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation Canvas -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-robot logo-icon"></i>
+                    <span>Automation Copilot</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features" class="active">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#use-cases">Use Cases</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#testimonials">Testimonials</a>
+                </div>
+                <a href="#cta" class="cta-button">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Build Powerful Automations with <span class="gradient-text">AI Assistance</span></h1>
+            <p>Automation Copilot helps you create complex workflows with natural language. No coding required.</p>
+            <div class="hero-buttons">
+                <a href="#cta" class="cta-button">Start Building Free</a>
+                <a href="#demo" class="btn-secondary">Watch Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Powerful Features</h2>
+                <p>Everything you need to build, manage, and scale your automations</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI-Powered Builder</h3>
+                    <p>Describe what you want to automate in plain English, and our AI builds the workflow for you.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <h3>MCP Connectors</h3>
+                    <p>Connect to hundreds of services with our Model Context Protocol connectors.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Visual Flow Builder</h3>
+                    <p>Drag and drop interface to build, edit, and visualize your automation workflows.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Analytics & Monitoring</h3>
+                    <p>Track performance, success rates, and get insights to optimize your automations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Enterprise Security</h3>
+                    <p>Bank-grade security with encryption, access controls, and compliance certifications.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Real-time Collaboration</h3>
+                    <p>Work together with your team on automation projects with version control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="section">
+        <div class="container">
+            <div class="demo-section">
+                <h2>See Automation Copilot in Action</h2>
+                <p>Watch how easy it is to build a complete data processing workflow with AI assistance</p>
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <!-- Placeholder for demo video/image -->
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 20px; text-align: center; color: var(--text-muted);">
+                        <i class="fas fa-play-circle" style="font-size: 60px; margin-bottom: 20px;"></i>
+                        <p>Product demo video would be embedded here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works - ENHANCED SECTION -->
+    <section id="how-it-works" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p>Build complex automations in four simple steps with our visual workflow builder</p>
+            </div>
+            
+            <div class="how-it-works-container">
+                <div class="workflow-steps">
+                    <div class="step" data-step="1">
+                        <div class="step-circle">1</div>
+                        <h3>Describe Your Goal</h3>
+                        <p>Tell our AI what you want to automate using natural language. No technical knowledge required.</p>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <h3>AI Builds the Flow</h3>
+                        <p>Our AI analyzes your request and builds a complete workflow with all necessary steps.</p>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <h3>Review & Customize</h3>
+                        <p>Review the generated workflow and make any adjustments using our visual editor.</p>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <h3>Deploy & Monitor</h3>
+                        <p>Deploy your automation with one click and monitor its performance in real-time.</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-demo">
+                    <div class="demo-content">
+                        <div class="demo-text">
+                            <h3 id="demo-title">Describe Your Automation Goal</h3>
+                            <p id="demo-description">Simply tell our AI what you want to automate in plain English. For example: "Send a welcome email to new users and add them to our CRM."</p>
+                            <div class="demo-controls">
+                                <button class="demo-btn active" data-step="1">Step 1</button>
+                                <button class="demo-btn" data-step="2">Step 2</button>
+                                <button class="demo-btn" data-step="3">Step 3</button>
+                                <button class="demo-btn" data-step="4">Step 4</button>
+                            </div>
+                        </div>
+                        <div class="demo-visual">
+                            <div class="flow-visualization" id="flow-visualization">
+                                <!-- Flow nodes and connectors will be added by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section id="use-cases" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Popular Use Cases</h2>
+                <p>See how teams are using Automation Copilot across industries</p>
+            </div>
+            <div class="use-cases">
+                <div class="use-case">
+                    <div class="use-case-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Data Processing</h3>
+                    <p>Automate data collection, transformation, and reporting from multiple sources.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Automation</h3>
+                    <p>Create personalized email sequences based on triggers and user actions.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3>E-commerce</h3>
+                    <p>Automate order processing, inventory management, and customer notifications.</p>
+                </div>
+                <div class="use-case">
+                    <div class="use-case-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>HR & Recruiting</h3>
+                    <p>Streamline candidate screening, onboarding, and employee lifecycle processes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>What Our Customers Say</h2>
+                <p>Join thousands of teams automating their workflows with Automation Copilot</p>
+            </div>
+            <div class="testimonials">
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        "Automation Copilot has transformed how we handle data processing. What used to take days now happens automatically. The AI builder is incredibly intuitive."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SM</div>
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>Data Operations Manager, TechCorp</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        "We've automated 80% of our repetitive tasks with Automation Copilot. The visual flow builder makes it easy for non-technical team members to contribute."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MR</div>
+                        <div class="author-info">
+                            <h4>Michael Rodriguez</h4>
+                            <p>CTO, StartupXYZ</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        "The MCP connectors saved us countless hours of API integration work. We connected to all our tools in minutes, not weeks."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AL</div>
+                        <div class="author-info">
+                            <h4>Alex Lee</h4>
+                            <p>Product Manager, GrowthLabs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="cta" class="section">
+        <div class="container">
+            <div class="cta-section">
+                <h2>Ready to Transform Your Workflows?</h2>
+                <p>Join thousands of teams automating their processes with AI assistance. Start building your first automation in minutes.</p>
+                <a href="#" class="cta-button">Get Started Free</a>
+                <p style="margin-top: 20px; font-size: 0.9rem;">No credit card required • 14-day free trial</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Automation Copilot</h3>
+                    <p>Build powerful automations with AI assistance. No coding required.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Product</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="#">Use Cases</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Automation Copilot. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced Background Animation
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Enhanced Particle System
+        const particles = [];
+        const connections = [];
+        const particleCount = 80;
+        const connectionDistance = 150;
+
+        // Create enhanced particles
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.7,
+                vy: (Math.random() - 0.5) * 0.7,
+                radius: Math.random() * 3 + 1,
+                color: i % 3 === 0 ? 'rgba(124, 58, 237, 0.7)' : 
+                       i % 3 === 1 ? 'rgba(6, 214, 160, 0.7)' : 
+                       'rgba(245, 158, 11, 0.7)',
+                pulse: Math.random() * Math.PI * 2,
+                pulseSpeed: 0.02 + Math.random() * 0.02
+            });
+        }
+
+        // Add some special AI nodes
+        for (let i = 0; i < 5; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: 0,
+                vy: 0,
+                radius: 8,
+                color: 'rgba(255, 255, 255, 0.9)',
+                pulse: Math.random() * Math.PI * 2,
+                pulseSpeed: 0.05,
+                isNode: true
+            });
+        }
+
+        // Animation loop
+        function animate() {
+            // Create a subtle fade effect instead of clearing completely
+            ctx.fillStyle = 'rgba(15, 15, 35, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Update and draw particles
+            particles.forEach(particle => {
+                // Move particle (except for nodes)
+                if (!particle.isNode) {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    // Bounce off edges
+                    if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+                }
+                
+                // Pulse effect
+                particle.pulse += particle.pulseSpeed;
+                const pulseRadius = particle.radius + Math.sin(particle.pulse) * (particle.isNode ? 2 : 0.5);
+                
+                // Draw particle with glow effect
+                const gradient = ctx.createRadialGradient(
+                    particle.x, particle.y, 0,
+                    particle.x, particle.y, pulseRadius * 2
+                );
+                
+                if (particle.isNode) {
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                    gradient.addColorStop(0.5, 'rgba(124, 58, 237, 0.5)');
+                    gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
+                } else {
+                    gradient.addColorStop(0, particle.color);
+                    gradient.addColorStop(0.7, particle.color.replace('0.7', '0.3'));
+                    gradient.addColorStop(1, particle.color.replace('0.7', '0'));
+                }
+                
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, pulseRadius * 2, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw inner particle
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, pulseRadius, 0, Math.PI * 2);
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+            });
+            
+            // Draw connections between nearby particles
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < connectionDistance) {
+                        const opacity = 1 - (distance / connectionDistance);
+                        
+                        // Create gradient for connection line
+                        const gradient = ctx.createLinearGradient(
+                            particles[i].x, particles[i].y,
+                            particles[j].x, particles[j].y
+                        );
+                        
+                        gradient.addColorStop(0, particles[i].color.replace('0.7', `${opacity * 0.3}`));
+                        gradient.addColorStop(1, particles[j].color.replace('0.7', `${opacity * 0.3}`));
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = gradient;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Add some floating text elements for a more AI feel
+            ctx.fillStyle = 'rgba(124, 58, 237, 0.1)';
+            ctx.font = '12px monospace';
+            ctx.fillText('AI', Math.random() * canvas.width, Math.random() * canvas.height);
+            ctx.fillText('AUTOMATION', Math.random() * canvas.width, Math.random() * canvas.height);
+            ctx.fillText('WORKFLOW', Math.random() * canvas.width, Math.random() * canvas.height);
+            
+            requestAnimationFrame(animate);
+        }
+
+        // Start animation
+        animate();
+
+        // Enhanced "How It Works" Section Functionality
+        const demoButtons = document.querySelectorAll('.demo-btn');
+        const demoTitle = document.getElementById('demo-title');
+        const demoDescription = document.getElementById('demo-description');
+        const flowVisualization = document.getElementById('flow-visualization');
+        
+        // Step descriptions
+        const stepData = {
+            1: {
+                title: "Describe Your Automation Goal",
+                description: "Simply tell our AI what you want to automate in plain English. For example: 'Send a welcome email to new users and add them to our CRM.'",
+                nodes: [
+                    { id: 'input', text: 'User Input', icon: 'fas fa-comment', x: 30, y: 100 },
+                    { id: 'ai', text: 'AI Processing', icon: 'fas fa-brain', x: 150, y: 100 }
+                ],
+                connectors: [
+                    { from: 'input', to: 'ai', active: true }
+                ]
+            },
+            2: {
+                title: "AI Builds the Workflow",
+                description: "Our AI analyzes your request and automatically generates a complete workflow with all necessary steps and connections.",
+                nodes: [
+                    { id: 'input', text: 'User Input', icon: 'fas fa-comment', x: 30, y: 100 },
+                    { id: 'ai', text: 'AI Processing', icon: 'fas fa-brain', x: 150, y: 100 },
+                    { id: 'step1', text: 'Extract Data', icon: 'fas fa-database', x: 270, y: 60 },
+                    { id: 'step2', text: 'Transform', icon: 'fas fa-cogs', x: 270, y: 140 }
+                ],
+                connectors: [
+                    { from: 'input', to: 'ai', active: true },
+                    { from: 'ai', to: 'step1', active: true },
+                    { from: 'ai', to: 'step2', active: true }
+                ]
+            },
+            3: {
+                title: "Review & Customize",
+                description: "Review the generated workflow and make any adjustments using our intuitive visual editor. Drag and drop to rearrange steps.",
+                nodes: [
+                    { id: 'input', text: 'User Input', icon: 'fas fa-comment', x: 30, y: 100 },
+                    { id: 'ai', text: 'AI Processing', icon: 'fas fa-brain', x: 150, y: 100 },
+                    { id: 'step1', text: 'Extract Data', icon: 'fas fa-database', x: 270, y: 60 },
+                    { id: 'step2', text: 'Transform', icon: 'fas fa-cogs', x: 270, y: 140 },
+                    { id: 'step3', text: 'Send Email', icon: 'fas fa-envelope', x: 390, y: 100 }
+                ],
+                connectors: [
+                    { from: 'input', to: 'ai', active: true },
+                    { from: 'ai', to: 'step1', active: true },
+                    { from: 'ai', to: 'step2', active: true },
+                    { from: 'step1', to: 'step3', active: true },
+                    { from: 'step2', to: 'step3', active: true }
+                ]
+            },
+            4: {
+                title: "Deploy & Monitor",
+                description: "Deploy your automation with one click and monitor its performance in real-time with detailed analytics and logs.",
+                nodes: [
+                    { id: 'input', text: 'User Input', icon: 'fas fa-comment', x: 30, y: 100 },
+                    { id: 'ai', text: 'AI Processing', icon: 'fas fa-brain', x: 150, y: 100 },
+                    { id: 'step1', text: 'Extract Data', icon: 'fas fa-database', x: 270, y: 60 },
+                    { id: 'step2', text: 'Transform', icon: 'fas fa-cogs', x: 270, y: 140 },
+                    { id: 'step3', text: 'Send Email', icon: 'fas fa-envelope', x: 390, y: 100 },
+                    { id: 'deploy', text: 'Deploy', icon: 'fas fa-rocket', x: 510, y: 100 },
+                    { id: 'monitor', text: 'Monitor', icon: 'fas fa-chart-bar', x: 630, y: 100 }
+                ],
+                connectors: [
+                    { from: 'input', to: 'ai', active: true },
+                    { from: 'ai', to: 'step1', active: true },
+                    { from: 'ai', to: 'step2', active: true },
+                    { from: 'step1', to: 'step3', active: true },
+                    { from: 'step2', to: 'step3', active: true },
+                    { from: 'step3', to: 'deploy', active: true },
+                    { from: 'deploy', to: 'monitor', active: true }
+                ]
+            }
+        };
+
+        // Initialize with step 1
+        updateStepVisualization(1);
+
+        // Add event listeners to demo buttons
+        demoButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const step = this.getAttribute('data-step');
+                
+                // Update active button
+                demoButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update visualization
+                updateStepVisualization(step);
+            });
+        });
+
+        // Function to update the step visualization
+        function updateStepVisualization(step) {
+            const data = stepData[step];
+            
+            // Update text
+            demoTitle.textContent = data.title;
+            demoDescription.textContent = data.description;
+            
+            // Clear previous visualization
+            flowVisualization.innerHTML = '';
+            
+            // Create nodes
+            data.nodes.forEach(node => {
+                const nodeElement = document.createElement('div');
+                nodeElement.className = 'flow-node';
+                nodeElement.id = node.id;
+                nodeElement.style.left = `${node.x}px`;
+                nodeElement.style.top = `${node.y}px`;
+                nodeElement.innerHTML = `<i class="${node.icon}"></i>`;
+                flowVisualization.appendChild(nodeElement);
+            });
+            
+            // Create connectors
+            data.connectors.forEach(connector => {
+                const fromNode = document.getElementById(connector.from);
+                const toNode = document.getElementById(connector.to);
+                
+                if (fromNode && toNode) {
+                    const fromRect = fromNode.getBoundingClientRect();
+                    const toRect = toNode.getBoundingClientRect();
+                    const containerRect = flowVisualization.getBoundingClientRect();
+                    
+                    const fromX = fromRect.left - containerRect.left + fromRect.width / 2;
+                    const fromY = fromRect.top - containerRect.top + fromRect.height / 2;
+                    const toX = toRect.left - containerRect.left + toRect.width / 2;
+                    const toY = toRect.top - containerRect.top + toRect.height / 2;
+                    
+                    const length = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+                    const angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
+                    
+                    const connectorElement = document.createElement('div');
+                    connectorElement.className = 'flow-connector';
+                    connectorElement.style.width = `${length}px`;
+                    connectorElement.style.left = `${fromX}px`;
+                    connectorElement.style.top = `${fromY}px`;
+                    connectorElement.style.transform = `rotate(${angle}deg)`;
+                    connectorElement.style.opacity = connector.active ? '1' : '0.3';
+                    
+                    flowVisualization.appendChild(connectorElement);
+                }
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Sticky header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(15, 15, 35, 0.95)';
+                header.style.backdropFilter = 'blur(20px)';
+            } else {
+                header.style.background = 'rgba(15, 15, 35, 0.85)';
+                header.style.backdropFilter = 'blur(15px)';
+            }
+        });
+
+        // Enhanced shine animation for cards on hover
+        document.querySelectorAll('.feature-card, .use-case, .testimonial, .step').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                // Add a temporary class for additional effects
+                this.classList.add('card-hover-active');
+                
+                // Create a ripple effect for the background particles
+                createRippleEffect(this.getBoundingClientRect().x + this.offsetWidth/2, 
+                                 this.getBoundingClientRect().y + this.offsetHeight/2);
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.classList.remove('card-hover-active');
+            });
+        });
+
+        // Function to create ripple effect in background when hovering cards
+        function createRippleEffect(x, y) {
+            // Create a temporary particle that expands and fades
+            const ripple = {
+                x: x,
+                y: y,
+                radius: 5,
+                maxRadius: 100,
+                alpha: 0.5,
+                color: 'rgba(124, 58, 237, 0.3)'
+            };
+            
+            function animateRipple() {
+                if (ripple.radius < ripple.maxRadius && ripple.alpha > 0) {
+                    ripple.radius += 3;
+                    ripple.alpha -= 0.02;
+                    
+                    ctx.beginPath();
+                    ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(124, 58, 237, ${ripple.alpha})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    requestAnimationFrame(animateRipple);
+                }
+            }
+            
+            animateRipple();
+        }
+    </script>
+</body>
+</html>
